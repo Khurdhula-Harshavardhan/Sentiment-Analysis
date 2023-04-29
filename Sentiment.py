@@ -17,6 +17,8 @@ class Sentiment():
     __negative_log_proba = None
     __prediction = None
     __user_input_tfidf = None
+    __response = None
+
     def __init__(self) -> None:
         """
         Constructor is responsible for loading the following:
@@ -32,6 +34,9 @@ class Sentiment():
             self.__negative_proba = float()
             self.__postivie_log_proba = float()
             self.__negative_log_proba = float()
+
+            #response
+            self.__response = dict()
         except Exception as e:
             print("[ERR] The following error occured while trying to initialize Sentiment(): "+str(e))
     
@@ -41,7 +46,6 @@ class Sentiment():
         """
         try:
             self.__user_input_tfidf = self.__vectorizer.transform([user_input]) #We represent the user input in sparse matrix.
-            print(self.__user_input_tfidf)
         except Exception as e:
             print("[ERR] The following error occured while trying to transform the user input: "+str(e))
 
@@ -56,11 +60,32 @@ class Sentiment():
             log_probabilities = self.__model.predict_log_proba(self.__user_input_tfidf)
             self.__postivie_log_proba = log_probabilities[0][1]
             self.__negative_log_proba = log_probabilities[0][0]
-            print(self.__postivie_proba, self.__negative_proba)
-            print(log_probabilities)
+            self.__prediction = self.__model.predict(self.__user_input_tfidf)[0]
         except Exception as e:
             print("[ERR] The following err occured while trying to make predictions: "+str(e))
 
+    def build_response(self, user_input) -> dict:
+        """
+        Builds a JSON response and returns it..
+        """
+        try:
+            self.__response.clear()
+            self.__response["Developer"] = "Harsha Vardhan Khurdula"
+            self.__response["Text"] = user_input
+            self.__response["Positive Class"] = self.__postivie_proba
+            self.__response["Negative Class"] = self.__negative_proba
+            self.__response["Positive Class Log"] = self.__postivie_log_proba
+            self.__response["Negative Class Log"] = self.__negative_log_proba
+            self.__response["Prediction"] = self.__prediction
+
+            if self.__prediction == 0:
+                self.__response["Label"] = "Negative"
+            else:
+                self.__response["Label"] = "Positive"
+
+            return self.__response
+        except Exception as e:
+            print("[ERR] The following error occured while building a JSON response: "+str(e))
 
     def get_sentiment(self, user_input: str) -> dict:
         """
@@ -69,6 +94,7 @@ class Sentiment():
         try:
             self.transform_input(user_input=user_input)
             self.make()
+            print(self.build_response(user_input=user_input))
         except Exception as e:
             print("[ERR] The following error occured while trying to determine sentiment of your input: "+str(e))
 
