@@ -16,6 +16,7 @@ class Sentiment():
     __postivie_log_proba = None
     __negative_log_proba = None
     __prediction = None
+    __user_input_tfidf = None
     def __init__(self) -> None:
         """
         Constructor is responsible for loading the following:
@@ -33,14 +34,24 @@ class Sentiment():
             self.__negative_log_proba = float()
         except Exception as e:
             print("[ERR] The following error occured while trying to initialize Sentiment(): "+str(e))
+    
+    def transform_input(self, user_input: str) -> None:
+        """
+        As the name suggests, this method makes use of the vectorizer, to transform the input to sparse matrix representation of term frquency - inverse document frequency.
+        """
+        try:
+            self.__user_input_tfidf = self.__vectorizer.transform([user_input]) #We represent the user input in sparse matrix.
+            print(self.__user_input_tfidf)
+        except Exception as e:
+            print("[ERR] The following error occured while trying to transform the user input: "+str(e))
+
 
     def get_sentiment(self, user_input: str) -> dict:
         """
         Get sentiment is the core method of the Sentiment module, that receives the user input text, and yields the output.
         """
         try:
-            user_input_transformed = self.__vectorizer.transform([user_input]) #We represent the user input in sparse matrix.
-            print(user_input_transformed)
+            self.transform_input(user_input=user_input)
         except Exception as e:
             print("[ERR] The following error occured while trying to determine sentiment of your input: "+str(e))
 
