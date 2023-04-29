@@ -1,3 +1,4 @@
+from joblib import load
 
 class Sentiment():
     """
@@ -7,6 +8,9 @@ class Sentiment():
 
     However, this module only captures, Either Negative or Positive, there is no Nuetral label!
     """
+    #Sentiment Attributes:
+    __vectorizer = None
+    __model = None
 
     def __init__(self) -> None:
         """
@@ -15,6 +19,10 @@ class Sentiment():
         LogisticRegression: A saved instance of LR that was fitted to Sentiment data.
         """
         try:
-            pass
+            self.__vectorizer = load("fitted_vectorizer.joblib")
+            self.__model = load("logisitic_regression.joblib")
         except Exception as e:
             print("[ERR] The following error occured while trying to initialize Sentiment(): "+str(e))
+
+
+Sentiment()
