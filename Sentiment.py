@@ -45,6 +45,22 @@ class Sentiment():
         except Exception as e:
             print("[ERR] The following error occured while trying to transform the user input: "+str(e))
 
+    def make(self) -> None:
+        """
+        The make method, makes predictions, and assigns attributes their respective values.
+        """
+        try:
+            probabilities = self.__model.predict_proba(self.__user_input_tfidf)
+            self.__postivie_proba = probabilities[0][1]
+            self.__negative_proba = probabilities[0][0]
+            log_probabilities = self.__model.predict_log_proba(self.__user_input_tfidf)
+            self.__postivie_log_proba = log_probabilities[0][1]
+            self.__negative_log_proba = log_probabilities[0][0]
+            print(self.__postivie_proba, self.__negative_proba)
+            print(log_probabilities)
+        except Exception as e:
+            print("[ERR] The following err occured while trying to make predictions: "+str(e))
+
 
     def get_sentiment(self, user_input: str) -> dict:
         """
@@ -52,6 +68,7 @@ class Sentiment():
         """
         try:
             self.transform_input(user_input=user_input)
+            self.make()
         except Exception as e:
             print("[ERR] The following error occured while trying to determine sentiment of your input: "+str(e))
 
