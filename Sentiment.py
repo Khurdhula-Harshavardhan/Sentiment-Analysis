@@ -123,7 +123,3 @@ class Sentiment():
             error_msg["Status"] = "Failed"
             error_msg["Error"] = "The following error occured while trying to build an error reponse: "+str(e)
             return error_msg
-
-obj = Sentiment()
-while(True):
-    print(obj.get_sentiment(input("Statement: ")))
