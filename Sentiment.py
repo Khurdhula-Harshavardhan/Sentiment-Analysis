@@ -38,7 +38,8 @@ class Sentiment():
             #response
             self.__response = dict()
         except Exception as e:
-            print("[ERR] The following error occured while trying to initialize Sentiment(): "+str(e))
+            msg = self.build_error_msg("The following error occured while trying to initialize Sentiment(): "+str(e))
+            return msg
     
     def transform_input(self, user_input: str) -> None:
         """
@@ -47,7 +48,8 @@ class Sentiment():
         try:
             self.__user_input_tfidf = self.__vectorizer.transform([user_input]) #We represent the user input in sparse matrix.
         except Exception as e:
-            print("[ERR] The following error occured while trying to transform the user input: "+str(e))
+            msg = self.build_error_msg("The following error occured while trying to transform the user input: "+str(e))
+            return msg
 
     def make(self) -> None:
         """
@@ -62,7 +64,8 @@ class Sentiment():
             self.__negative_log_proba = log_probabilities[0][0]
             self.__prediction = self.__model.predict(self.__user_input_tfidf)[0]
         except Exception as e:
-            print("[ERR] The following err occured while trying to make predictions: "+str(e))
+            msg = self.build_error_msg("The following err occured while trying to make predictions: "+str(e))
+            return msg
 
     def build_response(self, user_input) -> dict:
         """
@@ -71,6 +74,7 @@ class Sentiment():
         try:
             self.__response.clear()
             self.__response["Developer"] = "Harsha Vardhan Khurdula"
+            self.__response["Status"] = "Success"
             self.__response["Text"] = user_input
             self.__response["Positive Class"] = self.__postivie_proba
             self.__response["Negative Class"] = self.__negative_proba
@@ -85,8 +89,9 @@ class Sentiment():
 
             return self.__response
         except Exception as e:
-            print("[ERR] The following error occured while building a JSON response: "+str(e))
-
+            msg = self.build_error_msg("The following error occured while building a JSON response: "+str(e))
+            return msg
+        
     def get_sentiment(self, user_input: str) -> dict:
         """
         Get sentiment is the core method of the Sentiment module, that receives the user input text, and yields the output.
@@ -94,9 +99,31 @@ class Sentiment():
         try:
             self.transform_input(user_input=user_input)
             self.make()
-            print(self.build_response(user_input=user_input))
+            return self.build_response(user_input=user_input)
         except Exception as e:
-            print("[ERR] The following error occured while trying to determine sentiment of your input: "+str(e))
+            msg = self.build_error_msg("The following error occured while trying to determine sentiment of your input: "+str(e))
+            return msg
+
+
+    def build_error_msg(self, msg: str) -> dict:
+        """
+        Accepts a string that explains an error that might have occured while performing the task and returns a json reponse.
+        """
+        try:
+            error_msg = dict()
+            error_msg["Developer"] = "Harsha Vardhan Khurdula"
+            error_msg["Status"] = "Failed"
+            error_msg["Error"] = msg
+
+            return error_msg
+
+        except Exception as e:
+            error_msg = dict()
+            error_msg["Developer"] = "Harsha Vardhan Khurdula"
+            error_msg["Status"] = "Failed"
+            error_msg["Error"] = "The following error occured while trying to build an error reponse: "+str(e)
+            return error_msg
 
 obj = Sentiment()
-obj.get_sentiment("Hello what is up my g?")
+while(True):
+    print(obj.get_sentiment(input("Statement: ")))
